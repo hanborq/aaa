@@ -1,0 +1,2 @@
+insert into user values(md5(now()), 'tester1@test.com', md5('password'), 'tester1', 1, UNIX_TIMESTAMP()*1000, UNIX_TIMESTAMP()*1000, '' );
+

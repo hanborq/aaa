@@ -1,0 +1,16 @@
+1 install
+tar -zxvf bigdata-aaa.tar.gz
+
+2 configure
+修改apache-tomcat-6.0.20/conf/server.xml，根据需要修改各个端口
+修改apache-tomcat-6.0.20/conf/context.xml，根据需要修改mysql信息
+修改apache-tomcat-6.0.20/webapps/ROOT/WEB-INF/web.xml，找到CAS Filter配置部分，根据server.xml中的端口信息修改这里的链接地址
+修改conf/bigdata-aaa-conf.xml，需要修改host.name.ssl和host.name.nonssl两部分，其他是邮件服务器的信息，可以不修改
+
+3 安装ssl证书
+bin/gen_cacerts.sh <smtp> <domain>，其中smtp为邮件服务器的host:port，domain为启动服务需要的域名，www.xxx.com或xxx.xxx.xxx.xxx等ip表示
+
+4 启动和停止
+bin/start_aaa.sh
+bin/stop_aaa.sh
+

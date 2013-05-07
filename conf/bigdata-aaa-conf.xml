@@ -1,0 +1,40 @@
+<bigdata>
+
+  <!-- host name conf -->
+  <property>
+    <name>host.name.ssl</name>
+    <value>https://172.16.1.133:8443</value>
+  </property>
+
+  <property>
+    <name>host.name.nonssl</name>
+    <value>http://172.16.1.133:8080</value>
+  </property>
+
+  <!-- mail conf -->
+  <property>
+    <name>mail.address</name>
+    <value>rockstor@126.com</value>
+  </property>
+
+  <property>
+    <name>mail.smtp.host</name>
+    <value>smtp.126.com</value>
+  </property>
+
+  <property>
+    <name>mail.smtp.port</name>
+    <value>465</value>
+  </property>
+
+  <property>
+    <name>mail.smtp.username</name>
+    <value>rockstor</value>
+  </property>
+
+  <property>
+    <name>mail.smtp.password</name>
+    <value>rockstor2011</value>
+  </property>
+
+</bigdata>

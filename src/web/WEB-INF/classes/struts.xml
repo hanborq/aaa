@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <package name="rockstor-aaa-index" extends="json-default">
+        
+        <global-results>
+            <result name="success" type="json">
+                <param name="defaultEncoding">UTF-8</param>
+            </result>
+        </global-results>
+
+        <action name="Reg" class="com.bigdata.aaa.webifc.action.RegAction" />
+        <action name="RegAct" class="com.bigdata.aaa.webifc.action.RegActAction">
+            <result name="success" type="redirect">reg3.jsp</result>
+            <result name="error" type="redirect">error.jsp?msg=${message}</result>
+        </action>
+    </package>
+
+    <package name="rockstor-aaa-oper" extends="json-default" namespace="/user">
+        <global-results>
+            <result name="success" type="json">
+                <param name="defaultEncoding">UTF-8</param>
+            </result>
+        </global-results>
+
+        <action name="ChangePwd" class="com.bigdata.aaa.webifc.action.ChangePwdAction" />
+        <action name="ListAccessKey" class="com.bigdata.aaa.webifc.action.ListAccessKeyAction" />
+        <action name="NewAccessKey" class="com.bigdata.aaa.webifc.action.NewAccessKeyAction" />
+        <action name="DelAccessKey" class="com.bigdata.aaa.webifc.action.DelAccessKeyAction" />
+        <action name="ActivateAccessKey" class="com.bigdata.aaa.webifc.action.ActivateAccessKeyAction" />
+        <action name="DeactivateAccessKey" class="com.bigdata.aaa.webifc.action.DeactivateAccessKeyAction" />
+    </package>
+
+</struts>

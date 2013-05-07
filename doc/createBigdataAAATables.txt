@@ -1,0 +1,48 @@
+CREATE DATABASE IF NOT EXISTS bigdata_aaa;
+
+USE bigdata_aaa;
+
+CREATE TABLE IF NOT EXISTS user(
+                        user_id VARCHAR(32),
+                        user_name VARCHAR(64),
+                        password VARCHAR(64),
+                        disp_name VARCHAR(64),
+                        user_type TINYINT,
+                        reg_time BIGINT,
+                        act_time BIGINT,
+                        act_key VARCHAR(32),
+     			PRIMARY KEY(user_id, user_name))
+     			Engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS access_keys(
+                        user_id VARCHAR(32),
+                        access_key CHAR(20),
+                        security_key CHAR(40),
+                        create_time BIGINT,
+                        status TINYINT,
+     			PRIMARY KEY(user_id, access_key))
+     			Engine=InnoDB;
+
+INSERT INTO user VALUES('0', 'admin', '21232f297a57a5a743894a0e4a801fc3', 'admin', 0, UNIX_TIMESTAMP()*1000, UNIX_TIMESTAMP()*1000, '');
+
+INSERT INTO access_keys VALUES('0', '21232f297a57a5a74389','21232f297a57a5a74389a5a743894a0e4a801fc3', UNIX_TIMESTAMP()*1000, 2);
+
+DROP PROCEDURE IF EXISTS bigdata_aaa_setUser;
+DELIMITER //
+CREATE PROCEDURE bigdata_aaa_setUser()
+BEGIN
+	DECLARE rec_count INT UNSIGNED;
+
+	SELECT COUNT(*) INTO rec_count FROM mysql.user where User='rockstoruser';
+	IF rec_count = 0 THEN
+		create user onestuser;
+		grant all privileges on *.* to 'bigdatauser'@'localhost' identified by 'mysql@bigdata' WITH GRANT OPTION;
+		grant all privileges on *.* to 'bigdatauser'@'%' identified by 'mysql@bigdata' WITH GRANT OPTION;
+	END IF;
+
+END
+//
+DELIMITER ;
+CALL bigdata_aaa_setUser();
+
+DELIMITER ;

@@ -1,0 +1,15 @@
+如果没有安装mysql server，则需要执行如下的步骤：
+1. 将mysql目录拷贝至linux某一目录；
+2. 进入mysql目录，更改install.sh模式为可执行：chmod +x install.sh；
+3. 运行./install.sh，即可完成mysql的安装；
+4. 启动mysql数据库：/home/onest/mysql/bin/mysqld_safe --defaults-file=/home/onest/mysql/share/mysql/my.cnf &
+5. 创建数据库表：/home/onest/mysql/bin/mysql -uroot -ppassword < createOnestTables.txt
+
+如果已经安装mysql server，则只需要完成数据库表的创建，步骤如下：
+1. 将mysql/createOnestTables.txt拷贝至linux某一目录；
+2. 运行mysql -uroot -ppassword < createOnestTables.txt即可完成数据库表的创建。
+
+说明：
+1. mysql server默认监听端口为3306，在配置文件/home/onest/mysql/share/mysql/my.cnf中，需要管理员在iptables中开放相应端口访问权限;
+2. 创建数据库表之后，访问数据库的用户名/密码为：onestuser/mysql@onest；
+3. 如需停止mysql server，运行：killall mysqld。

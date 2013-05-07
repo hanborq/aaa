@@ -1,0 +1,185 @@
+<project name="bigdata-aaa" default="jar" basedir=".">
+	<description>
+        Build aaa server for bigdata platform
+    </description>
+
+	<!-- set global properties for this build -->
+	<property name="version" value="1.0.1" />
+	<property name="src" location="src" />
+	<property name="src.java" location="${src}/java" />
+	<property name="src.web"  location="${src}/web" />
+	<property name="bin" location="bin" />
+	<property name="lib" location="lib" />
+	<property name="lib.common" location="${lib}/common" />
+	<property name="lib.struts2" location="${lib}/struts2" />
+	<property name="lib.cas-server" location="${lib}/cas-server" />
+	<property name="lib.cas-client" location="${lib}/cas-client" />
+	<property name="conf" location="conf" />
+	<property name="3rd-party" location="3rd-party" />
+	<property name="tomcat" location="${3rd-party}/tomcat" />
+	<property name="cas-server" location="${3rd-party}/cas-server" />
+	<property name="build" location="build" />
+	<property name="build.classes" location="${build}/classes" />
+	<property name="build.root.jar" value="${build}/bigdata-aaa-root-${version}.jar" />
+	<property name="build.cas.jar" value="${build}/bigdata-aaa-cas-${version}.jar" />
+	<property name="build.util.jar" value="${build}/bigdata-aaa-util-${version}.jar" />
+	<property name="build.client.jar" value="${build}/bigdata-aaa-client-${version}.jar" />
+	<property name="build.package" value="${build}/bigdata-aaa-${version}.tar.gz" />
+
+	<target name="init">
+		<!-- Create the build directory structure used by compile -->
+		<echo message="Init build process, mkdir ${build}"/>
+		<mkdir dir="${build}"/>
+		<mkdir dir="${build.classes}"/>
+	</target>
+
+	<target name="compile" depends="init"
+            description="compile the source " >
+		<!-- Compile the java code from ${src} into ${build} -->
+		<echo message="Compile java files : ${src.java}"/>
+		<javac srcdir="${src.java}" debug="on" encoding="utf-8" destdir="${build.classes}">
+			<classpath>
+				<fileset dir="${lib.common}" />
+				<fileset dir="${lib.struts2}" />
+				<fileset dir="${lib.cas-server}" />
+				<fileset dir="${lib.cas-client}" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile"
+            description="generate the distribution jar file" >
+
+		<echo message="Make archive file : ${build.root.jar}"/>
+        <jar destfile="${build.root.jar}"
+            basedir="${build.classes}"
+            excludes="com/bigdata/aaa/cas/**/*.class"
+        />
+
+        <echo message="Make archive file : ${build.cas.jar}"/>
+        <jar destfile="${build.cas.jar}"
+            basedir="${build.classes}"
+            excludes="com/bigdata/aaa/webifc/**/*.class"
+        />
+        
+		<echo message="Make archive file : ${build.util.jar}"/>
+        <jar destfile="${build.util.jar}"
+            basedir="${build.classes}"
+            includes="com/bigdata/aaa/util/*.class"
+        />
+    </target>
+
+    <target name="client-jar" depends="compile"
+            description="generate the distribution jar file for client" >
+
+        <echo message="Make archive file : ${build.client.jar}"/>
+        <jar destfile="${build.client.jar}">
+        	<fileset dir="${build.classes}" includes="com/bigdata/aaa/db/User.class"/>
+            <fileset dir="${build.classes}" includes="com/bigdata/aaa/webifc/filter/UserInfoFilter.class"/>
+            <fileset dir="${build.classes}" includes="com/bigdata/aaa/util/InstallCert*.class"/>
+        </jar>
+    </target>
+
+	<target name="package" depends="jar"
+            description="generate the distribution" >
+
+		<echo message="Make distribution file : ${build.package}"/>
+
+		<echo message="Make package folders."/>
+		<mkdir dir="${build}/bigdata-aaa"/>
+		<mkdir dir="${build}/bigdata-aaa/conf"/>
+		<mkdir dir="${build}/bigdata-aaa/lib"/>
+		<mkdir dir="${build}/bigdata-aaa/bin"/>
+		<mkdir dir="${build}/bigdata-aaa/logs"/>
+
+		<echo message="Copy conf, bin and common lib files."/>
+		<copy todir="${build}/bigdata-aaa/bin">
+			<fileset dir="${bin}" />
+		</copy>
+		<copy todir="${build}/bigdata-aaa/conf">
+			<fileset dir="${conf}" />
+		</copy>
+		<copy todir="${build}/bigdata-aaa/lib"
+            file="${build.util.jar}"/>
+
+		<echo message="Copy tomcat files."/>
+		<untar src="${tomcat}/apache-tomcat-6.0.20.tar.gz" 
+            dest="${build}/bigdata-aaa" compression="gzip"/>
+		<copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/bin"
+            file="${tomcat}/script/catalina.sh"/>
+		<copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/conf"
+            file="${tomcat}/script/server.xml"/>
+		<copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/conf"
+            file="${tomcat}/script/context.xml"/>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/lib"
+            file="${lib.common}/commons-logging-1.1.jar"/>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/lib"
+            file="${lib.common}/log4j-1.2.15.jar"/>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/lib"
+            file="${lib.common}/mail.jar"/>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/lib"
+            file="${lib.common}/mysql-connector-java-5.1.5-bin.jar"/>
+		
+		<echo message="Copy cas files."/>
+		<mkdir dir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas"/>
+		<unwar src="${cas-server}/cas-server-3.0.7.war" dest="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas"/>
+		<copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/css"
+            file="${src.web}/css/bigdata.css"/>
+		<copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF"
+            file="${cas-server}/script/cas-servlet.xml"/>
+		<copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF"
+            file="${cas-server}/script/deployerConfigContext.xml"/>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF"
+            file="${cas-server}/script/web.xml"/>
+		<copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF/classes"
+            file="${cas-server}/script/bigdata_views.properties"/>
+		<delete file="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF/classes/log4j.properties" />
+        <mkdir dir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF/view/jsp/bigdata/ui" />
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF/view/jsp/bigdata/ui">
+            <fileset dir="${src.web}/cas" />
+        </copy>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF/view/jsp/bigdata/ui"
+            file="${src.web}/head.jsp"/>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/images"
+            file="${src.web}/images/logo.jpg"/>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/cas/WEB-INF/lib"
+                     file="${build.cas.jar}"/>
+
+        <echo message="Copy ROOT files."/>
+        <delete dir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/ROOT" />
+        <mkdir dir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/ROOT" />
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/ROOT">
+            <fileset dir="${src.web}" />
+        </copy>
+        <delete dir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/ROOT/cas" />
+        <mkdir dir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/ROOT/WEB-INF/lib" />
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/ROOT/WEB-INF/lib">
+            <fileset dir="${lib.struts2}" />
+            <fileset dir="${lib.cas-client}" />
+        </copy>
+        <copy todir="${build}/bigdata-aaa/apache-tomcat-6.0.20/webapps/ROOT/WEB-INF/lib"
+            file="${build.root.jar}"/>
+
+        <echo message="Make distribute file."/>
+		<tar compression="gzip" longfile="gnu" destfile="${build.package}">
+            <tarfileset dir="${build}/bigdata-aaa" prefix="bigdata-aaa-${version}">
+                <include name="**"/>
+                <exclude name="bin/*.sh"/>
+                <exclude name="apache-tomcat-6.0.20/bin/*.sh"/>
+            </tarfileset>
+            <tarfileset dir="${build}/bigdata-aaa" prefix="bigdata-aaa-${version}" mode="755">
+                <include name="bin/*.sh"/>
+            </tarfileset>
+            <tarfileset dir="${build}/bigdata-aaa" prefix="bigdata-aaa-${version}" mode="755">
+                <include name="apache-tomcat-6.0.20/bin/*.sh"/>
+            </tarfileset>
+        </tar>
+
+		<delete dir="${build}/bigdata-aaa" />
+
+	</target>
+
+	<target name="clean" description="clean up">
+		<delete dir="${build}" />
+	</target>
+</project>
