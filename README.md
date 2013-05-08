@@ -5,4 +5,4 @@ This project is also used in [RockStor](https://github.com/schubertzhang/rocksto
 [CAS - Yale Central Authentication Service project](http://www.jasig.org/cas)  
 [Amazon Access identification](https://portal.aws.amazon.com/gp/aws/securityCredentials)  
 
-The primary developer is [Yuanfeng](https://github.com/Yuanfeng)  
+The primary and initial developer was [Yuanfeng](https://github.com/Yuanfeng)  
